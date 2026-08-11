@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --bg: #06080a;
+    --fg: #e7edf2;
+    --muted: #8a97a5;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-base text-[#e7edf2] font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv01', 'cv11';
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Reduced-motion users get a calmer experience. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  ::selection {
+    background: rgba(87, 224, 255, 0.24);
+    color: #ffffff;
+  }
+
+  /* Slim, deep-tech scrollbar. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #06080a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1f2732;
+    border-radius: 8px;
+    border: 2px solid #06080a;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2a3542;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-container px-6 sm:px-8 lg:px-10;
+  }
+
+  /* Restrained glass panel — thin border, low-opacity fill, no heavy blur. */
+  .glass {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .hairline {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-neon-cyan/80;
+  }
+
+  .text-gradient {
+    background: linear-gradient(180deg, #ffffff 0%, #a9b6c2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .accent-glow {
+    text-shadow: 0 0 24px rgba(87, 224, 255, 0.35);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  }
+}
+
+/* Fine film grain overlay for a cinematic, deep-tech texture. */
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   Feature-card micro-visualizations
+   Motion runs continuously; cards brighten the viz on hover.
+   ============================================================ */
+
+.mv-wrap {
+  opacity: 0.45;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.group:hover .mv-wrap {
+  opacity: 1;
+}
+
+/* A dot travelling along an SVG path (gaze pupil, signal head). */
+@keyframes mv-offset {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+.mv-dot-load {
+  offset-path: path('M10 40 L44 26 L78 32 L112 16 L146 28 L180 12 L210 20');
+  offset-rotate: 0deg;
+  animation: mv-offset 2.8s ease-in-out infinite;
+}
+.mv-dot-recovery {
+  offset-path: path('M10 18 C48 18, 62 44, 96 44 C140 44, 172 24, 210 16');
+  offset-rotate: 0deg;
+  animation: mv-offset 3.2s ease-in-out infinite;
+}
+.mv-dot-gaze {
+  offset-path: path('M84 30 C104 18, 122 40, 138 26 C150 16, 92 22, 84 30');
+  offset-rotate: 0deg;
+  animation: mv-offset 3.4s ease-in-out infinite;
+}
+
+/* Facial landmark jitter. */
+@keyframes mv-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0.6px, -0.6px);
+  }
+}
+.mv-landmark {
+  animation: mv-jitter 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* 7-day trend bars gently breathing. */
+@keyframes mv-bar {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.78);
+  }
+}
+.mv-bar {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: mv-bar 2.6s ease-in-out infinite;
+}
+
+/* Privacy local-processing pulse ring + contained orbit. */
+@keyframes mv-ring {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+.mv-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mv-ring 2.6s ease-out infinite;
+}
+@keyframes mv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.mv-orbit {
+  transform-box: fill-box;
+  transform-origin: 110px 28px;
+  animation: mv-spin 5s linear infinite;
+}
+
+/* ============================================================
+   Pipeline ("How it works") flow pulses
+   ============================================================ */
+@keyframes flow-x {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(var(--flow-len, 80px));
+    opacity: 0;
+  }
+}
+.flow-x-dot {
+  animation: flow-x 2.2s linear infinite;
+}
+@keyframes flow-y {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--flow-len, 48px));
+    opacity: 0;
+  }
+}
+.flow-y-dot {
+  animation: flow-y 2s linear infinite;
+}
+
+/* Travelling highlight along a pipeline rail (horizontal + vertical). */
+@keyframes rail-x {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+.rail-x {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 42%,
+    rgba(105, 240, 180, 0.85) 50%,
+    transparent 58%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: rail-x 3.4s linear infinite;
+}
+@keyframes rail-y {
+  0% {
+    background-position: 0 200%;
+  }
+  100% {
+    background-position: 0 -100%;
+  }
+}
+.rail-y {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(105, 240, 180, 0.85) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: rail-y 3s linear infinite;
+}

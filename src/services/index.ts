@@ -1,0 +1,12 @@
+/** Public surface of the persistence layer. Components import from here. */
+export { storageService } from './storageService'
+export { authService } from './authService'
+export type { Credentials, RegisterInput } from './authService'
+export { sessionService } from './sessionService'
+export { analyticsService } from './analyticsService'
+export type { RangeAnalytics } from './analyticsService'
+export { recommendationService } from './recommendationService'
+export type { RecoveryStats } from './recommendationService'
+export { notificationService } from './notificationService'
+export { settingsService } from './settingsService'
+export * from './types'
