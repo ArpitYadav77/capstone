@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Radio,
+  MessageSquareText,
   BarChart3,
   HeartPulse,
   User,
@@ -20,6 +21,7 @@ import { cn } from '@/lib/cn'
 const NAV = [
   { to: '/app/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/app/session', label: 'Live Session', icon: Radio },
+  { to: '/app/assistant', label: 'Assistant', icon: MessageSquareText },
   { to: '/app/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/app/recovery', label: 'Recovery', icon: HeartPulse },
   { to: '/app/profile', label: 'Profile', icon: User },

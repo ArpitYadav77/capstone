@@ -17,14 +17,16 @@ export function TrendBars({
 }: TrendBarsProps) {
   const n = Math.max(values.length, 1)
   const top = Math.max(max ?? Math.max(...values, 1), 1)
-  const gap = 3
-  const barW = (100 - gap * (n - 1)) / n
+  // Proportional slots so bar widths stay positive for any number of bars.
+  const slot = 100 / n
+  const barW = Math.max(0.5, slot * 0.72)
+  const pad = (slot - barW) / 2
 
   return (
     <svg viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" className="h-full w-full">
       {values.map((v, i) => {
         const h = Math.max(2, (v / top) * (height - 4))
-        const x = i * (barW + gap)
+        const x = i * slot + pad
         const last = highlightLast && i === values.length - 1
         return (
           <rect

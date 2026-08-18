@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/auth/ProtectedRoute'
 import { AppLayout } from '@/app/AppLayout'
 import { Dashboard } from '@/pages/app/Dashboard'
 import { LiveSession } from '@/pages/app/LiveSession'
+import { Assistant } from '@/pages/app/Assistant'
 import { Analytics } from '@/pages/app/Analytics'
 import { Recovery } from '@/pages/app/Recovery'
 import { Profile } from '@/pages/app/Profile'
@@ -26,6 +27,7 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="session" element={<LiveSession />} />
+            <Route path="assistant" element={<Assistant />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="recovery" element={<Recovery />} />
             <Route path="profile" element={<Profile />} />
