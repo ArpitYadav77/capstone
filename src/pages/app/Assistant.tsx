@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Mic, MicOff, Send, Volume2 } from 'lucide-react'
 import { useAuth } from '@/auth/AuthContext'
 import { neoApi } from '@/services/neoApi'
@@ -6,6 +7,7 @@ import { Panel } from '@/components/ui/Panel'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Eyebrow } from '@/components/ui/Eyebrow'
+import { ThinkingDots } from '@/components/ui/ThinkingDots'
 import { cn } from '@/lib/cn'
 
 interface Turn {
@@ -141,7 +143,13 @@ export function Assistant() {
         ) : (
           <div className="space-y-4">
             {turns.map((t, i) => (
-              <div key={i} className={cn('flex', t.role === 'user' ? 'justify-end' : 'justify-start')}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className={cn('flex', t.role === 'user' ? 'justify-end' : 'justify-start')}
+              >
                 <div
                   className={cn(
                     'max-w-[85%] rounded-2xl px-4 py-2.5 text-[15px]',
@@ -169,18 +177,36 @@ export function Assistant() {
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
-            {busy && <p className="text-sm text-[#7c8894]">NEO is thinking…</p>}
+            <AnimatePresence>
+              {busy && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-2 text-sm text-[#7c8894]"
+                >
+                  NEO is thinking <ThinkingDots />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </Panel>
 
-      {error && (
-        <p className="mt-3 text-sm text-warm">
-          {error}
-        </p>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mt-3 text-sm text-warm"
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {/* Input row */}
       <form onSubmit={onSubmit} className="mt-4 flex items-end gap-3">
@@ -197,13 +223,20 @@ export function Assistant() {
             type="button"
             onClick={toggleMic}
             className={cn(
-              'grid h-11 w-11 shrink-0 place-items-center rounded-xl border transition-colors',
+              'relative grid h-11 w-11 shrink-0 place-items-center rounded-xl border transition-colors',
               listening
                 ? 'border-neon-cyan/50 bg-neon-cyan/15 text-neon-cyan'
                 : 'border-line bg-white/[0.02] text-[#c3ccd6] hover:text-white',
             )}
             aria-label={listening ? 'Stop listening' : 'Start voice input'}
           >
+            {listening && (
+              <motion.span
+                className="pointer-events-none absolute inset-0 rounded-xl border border-neon-cyan/60"
+                animate={{ scale: [1, 1.25], opacity: [0.6, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
+              />
+            )}
             {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
           </button>
         )}

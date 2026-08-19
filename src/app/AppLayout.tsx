@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   LayoutDashboard,
   Radio,
@@ -42,11 +43,20 @@ function NotificationsBell({ userId }: { userId: string }) {
         aria-label="Notifications"
       >
         <Bell className="h-[18px] w-[18px]" strokeWidth={1.6} />
-        {unread > 0 && (
-          <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-neon-cyan px-1 text-[10px] font-semibold text-base-950">
-            {unread}
-          </span>
-        )}
+        <AnimatePresence>
+          {unread > 0 && (
+            <motion.span
+              key={unread}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 24 }}
+              className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-neon-cyan px-1 text-[10px] font-semibold text-base-950"
+            >
+              {unread}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </button>
       {open && (
         <>

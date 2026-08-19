@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Play, Square, ShieldCheck, Camera, Cpu, Send, CameraOff, Loader2 } from 'lucide-react'
 import { useAuth } from '@/auth/AuthContext'
 import { recommendationService, sessionService, settingsService } from '@/services'
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/Button'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Stat } from '@/components/ui/Stat'
 import { TrendBars } from '@/components/ui/TrendBars'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { cn } from '@/lib/cn'
 
 function fmt(sec: number): string {
@@ -219,7 +221,12 @@ export function LiveSession() {
         <>
           {/* LIVE camera feed + metrics */}
           {mode === 'LIVE' && (
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <motion.div
+              className="mt-6 grid gap-4 lg:grid-cols-2"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            >
               {/* Camera feed */}
               <Panel className="relative overflow-hidden p-0">
                 <div className="relative aspect-video w-full bg-black/40">
@@ -309,13 +316,22 @@ export function LiveSession() {
                       Attention
                     </p>
                     {m && (
-                      <span className={cn('font-mono text-[11px] uppercase tracking-[0.16em]', STATUS_COLOR[m.status])}>
-                        {m.status}
-                      </span>
+                      <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                          key={m.status}
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 4 }}
+                          transition={{ duration: 0.25 }}
+                          className={cn('font-mono text-[11px] uppercase tracking-[0.16em]', STATUS_COLOR[m.status])}
+                        >
+                          {m.status}
+                        </motion.span>
+                      </AnimatePresence>
                     )}
                   </div>
                   <p className="mt-2 font-display text-5xl font-semibold text-white">
-                    {m ? m.attentionScore : '—'}
+                    {m ? <AnimatedNumber value={m.attentionScore} /> : '—'}
                     <span className="text-2xl text-[#7c8894]">/100</span>
                   </p>
                   {history.length > 1 && (
@@ -331,7 +347,7 @@ export function LiveSession() {
                   <Stat label="Eyes" value={m ? (m.eyes.open ? 'Open' : 'Closed') : '—'} accent="green" />
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Timer + primary control */}

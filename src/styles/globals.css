@@ -19,7 +19,9 @@
     @apply bg-base text-[#e7edf2] font-sans antialiased;
     font-feature-settings: 'ss01', 'cv01', 'cv11';
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
+    /* `clip` prevents horizontal scroll without creating a scroll container,
+       so `position: sticky` (used by the NEO hero) keeps working. */
+    overflow-x: clip;
   }
 
   /* Reduced-motion users get a calmer experience. */

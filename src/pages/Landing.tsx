@@ -1,8 +1,7 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { StaticBackground } from '@/components/layout/StaticBackground'
-import { Hero } from '@/components/sections/Hero'
-import { Narrative } from '@/components/sections/Narrative'
+import { NeoHero } from '@/components/hero/NeoHero'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { Features } from '@/components/sections/Features'
 import { DashboardPreview } from '@/components/sections/DashboardPreview'
@@ -18,8 +17,7 @@ export function Landing() {
       <div className="relative z-10">
         <Navbar />
         <main>
-          <Hero />
-          <Narrative />
+          <NeoHero />
           <HowItWorks />
           <Features />
           <DashboardPreview />

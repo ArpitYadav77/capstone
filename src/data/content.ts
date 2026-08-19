@@ -80,36 +80,6 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Privacy', href: '#privacy' },
 ]
 
-/** Scroll-narrative beats that play out over the hero + evolving neural scene. */
-export interface NarrativeStep {
-  index: string
-  title: string
-  body: string
-  /** Small readout shown beside the beat, tying copy to the brain's state. */
-  readout: { label: string; value: string }
-}
-
-export const NARRATIVE: NarrativeStep[] = [
-  {
-    index: '01',
-    title: 'DeskRobo observes behavioral signals.',
-    body: 'With your consent, Neo reads subtle, privacy-conscious signals — gaze stability, blink activity and facial movement — directly in your browser. No raw video leaves your device.',
-    readout: { label: 'Neural activity', value: 'rising' },
-  },
-  {
-    index: '02',
-    title: 'From signals to insight.',
-    body: 'Temporal patterns in those signals are combined into an estimated cognitive load and a clear confidence level — a wellness indicator, not a medical diagnosis.',
-    readout: { label: 'Pathways', value: 'illuminating' },
-  },
-  {
-    index: '03',
-    title: 'From insight to recovery.',
-    body: 'When signals suggest possible elevated cognitive load, Neo recommends short, practical recovery moments — so you can choose better times to pause, reset and continue.',
-    readout: { label: 'State', value: 'stabilizing' },
-  },
-]
-
 /** The end-to-end pipeline shown in the "How it works" sequence. */
 export interface FlowStage {
   icon: LucideIcon

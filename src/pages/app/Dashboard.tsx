@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { ArrowRight, Radio } from 'lucide-react'
 import { useAuth } from '@/auth/AuthContext'
 import { analyticsService, sessionService } from '@/services'
@@ -8,6 +9,16 @@ import { Button } from '@/components/ui/Button'
 import { Stat } from '@/components/ui/Stat'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { TrendBars } from '@/components/ui/TrendBars'
+import { fadeUp, hoverLift, staggerContainer } from '@/lib/motion'
+
+/** Grid item wrapper: staggered fade-up entrance + a gentle hover lift. */
+function Tile({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <motion.div variants={fadeUp} className={className} {...hoverLift}>
+      {children}
+    </motion.div>
+  )
+}
 
 function loadBand(load: number): string {
   if (load < 40) return 'LOW'
@@ -34,8 +45,13 @@ export function Dashboard() {
   const currentAttention = latest?.avgAttention ?? week.avgAttention
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <motion.div
+      className="mx-auto max-w-5xl"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div variants={fadeUp} className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Eyebrow>Dashboard</Eyebrow>
           <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
@@ -50,17 +66,26 @@ export function Dashboard() {
         <Button onClick={() => navigate('/app/session')} leftIcon={<Radio className="h-4 w-4" />}>
           Start Cognitive Check
         </Button>
-      </div>
+      </motion.div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Cognitive Load" value={loadBand(currentLoad)} accent="warm" hint={`${currentLoad} / 100`} />
-        <Stat label="Attention Stability" value={`${currentAttention}%`} accent="green" />
-        <Stat label="Sessions · 7d" value={week.totalSessions} accent="cyan" />
-        <Stat label="Focus · 7d" value={`${week.focusMinutes}m`} accent="plain" />
-      </div>
+      <motion.div variants={staggerContainer} className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Tile>
+          <Stat label="Cognitive Load" value={loadBand(currentLoad)} accent="warm" hint={`${currentLoad} / 100`} />
+        </Tile>
+        <Tile>
+          <Stat label="Attention Stability" value={`${currentAttention}%`} accent="green" />
+        </Tile>
+        <Tile>
+          <Stat label="Sessions · 7d" value={week.totalSessions} accent="cyan" />
+        </Tile>
+        <Tile>
+          <Stat label="Focus · 7d" value={`${week.focusMinutes}m`} accent="plain" />
+        </Tile>
+      </motion.div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <Panel className="p-6">
+      <motion.div variants={staggerContainer} className="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <Tile>
+          <Panel className="h-full p-6">
           <div className="flex items-center justify-between">
             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#7c8894]">
               Estimated load · last 7 days
@@ -73,9 +98,11 @@ export function Dashboard() {
           <div className="mt-5 h-32">
             <TrendBars values={week.summaries.map((s) => s.avgLoad)} max={100} />
           </div>
-        </Panel>
+          </Panel>
+        </Tile>
 
-        <Panel className="p-6">
+        <Tile>
+          <Panel className="h-full p-6">
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#7c8894]">
             Recent sessions
           </p>
@@ -103,8 +130,9 @@ export function Dashboard() {
           >
             View analytics <ArrowRight className="h-3.5 w-3.5" />
           </button>
-        </Panel>
-      </div>
-    </div>
+          </Panel>
+        </Tile>
+      </motion.div>
+    </motion.div>
   )
 }
