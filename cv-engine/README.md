@@ -20,6 +20,7 @@ webcam → MediaPipe landmarks → blink (EAR) → gaze → attention/fatigue
 | `gaze.py` | Rule-based gaze: CENTER / LEFT / RIGHT / AWAY |
 | `attention.py` | Smoothed attention score, fatigue indicator, status |
 | `main.py` | Orchestrates the pipeline and streams metrics over WebSocket |
+| `expression.py` | On-demand facial-expression classification via Roboflow (optional) |
 
 ## Setup
 ```bash
@@ -67,3 +68,40 @@ Press `q` (in the preview window) or `Ctrl+C` to stop.
 
 These are **behavioral indicators only** — NEO does not diagnose stress,
 emotion, or any medical condition.
+
+## Optional: facial-expression classification (Roboflow)
+
+`expression.py` runs the hosted Roboflow model `facial-expression-gtvqk/1` on a
+**single** image via Roboflow's Serverless Cloud API. It is **on-demand only** —
+one image per call, never the continuous webcam loop — so no continuous video is
+sent to the cloud. The result is a facial-expression *behavioral signal*
+(label + confidence), not a medical or emotional diagnosis.
+
+```bash
+pip install inference-sdk
+export ROBOFLOW_API_KEY=...          # https://app.roboflow.com/settings/api
+#  (or add ROBOFLOW_API_KEY=... to cv-engine/.env)
+
+python expression.py path/to/face.jpg      # local file
+python expression.py https://.../face.jpg  # image URL
+python expression.py --capture             # classify one webcam frame
+python expression.py face.jpg --raw        # full Roboflow JSON
+```
+
+Example output (`summarize`):
+```json
+{
+  "topExpression": "happy",
+  "confidence": 0.55,
+  "expressions": [
+    { "label": "happy", "confidence": 0.55 },
+    { "label": "neutral", "confidence": 0.21 }
+  ]
+}
+```
+
+Import it elsewhere to wire predictions into the project:
+```python
+from expression import classify, summarize
+summary = summarize(classify("face.jpg"))
+```
