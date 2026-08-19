@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Mic, MicOff, Send, Volume2 } from 'lucide-react'
+import { useAuth } from '@/auth/AuthContext'
 import { neoApi } from '@/services/neoApi'
 import { Panel } from '@/components/ui/Panel'
 import { Button } from '@/components/ui/Button'
@@ -48,12 +49,15 @@ function speak(text: string) {
 }
 
 export function Assistant() {
+  const { user } = useAuth()
   const [turns, setTurns] = useState<Turn[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [listening, setListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const recRef = useRef<SpeechRec | null>(null)
+  // Kept across turns so the backend groups the conversation thread.
+  const sessionIdRef = useRef<string | undefined>(undefined)
   const speechSupported = typeof window !== 'undefined' && !!getRecognition()
 
   useEffect(() => () => window.speechSynthesis?.cancel(), [])
@@ -66,8 +70,9 @@ export function Assistant() {
     setTurns((t) => [...t, { role: 'user', text: message }])
     setBusy(true)
     try {
-      const res = await neoApi.chat(message)
-      setTurns((t) => [...t, { role: 'neo', text: res.reply, tools: res.toolsUsed }])
+      const res = await neoApi.chat(message, { sessionId: sessionIdRef.current, userId: user?.id })
+      sessionIdRef.current = res.sessionId
+      setTurns((t) => [...t, { role: 'neo', text: res.reply }])
       speak(res.reply)
     } catch (err) {
       setError((err as Error).message)

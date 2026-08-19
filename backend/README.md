@@ -1,38 +1,55 @@
-# NEO — Backend
+# NEO — Backend (Express + MongoDB + Gemini)
 
-Node + TypeScript hub that ties the prototype together:
+Server-side API for the DeskRobo/NEO Assistant. Holds all secrets (Gemini API
+key + MongoDB credentials) — **nothing sensitive is ever exposed to the browser.**
 
-- **WebSocket hub** — the Python CV engine connects to `/cv` and streams
-  `NeoMetrics`; the React app connects to `/dashboard` and receives them live.
-- **REST API** (`/api/neo/*`) — metrics snapshot, ESP32 commands, and the Gemini
-  voice-assistant chat endpoint.
-- **ESP32 commands** — forwards `FOCUS_LOW | BREAK | GREETING | CUSTOM_MESSAGE`
-  to the device over Wi-Fi.
-- **Gemini assistant** — conversation only, with function-calling tools that read
-  live NEO metrics. No webcam video is ever sent to Gemini.
+```
+React Assistant → POST /api/chat → Express → MongoDB (context) → Gemini
+              → save conversation → { reply, sessionId, timestamp } → React
+```
 
 ## Setup
 ```bash
 cd backend
-cp .env.example .env      # add GEMINI_API_KEY (optional) and ESP32_URL (optional)
+cp .env.example .env      # set MONGODB_URI and GEMINI_API_KEY
 npm install
-npm run dev               # http://localhost:8080
+npm run dev               # tsx watch, http://localhost:5000
+# or:  npm run build && npm start
 ```
+
+The server connects to MongoDB and runs a **startup ping** before listening. If
+`MONGODB_URI` is missing or unreachable, it exits with a clear error.
+
+## Environment (`.env`)
+| Var | Purpose |
+|-----|---------|
+| `MONGODB_URI` | Mongo connection string (Atlas or local) |
+| `GEMINI_API_KEY` | Gemini key — **server-side only** |
+| `GEMINI_MODEL` | default `gemini-2.5-flash` |
+| `PORT` | default `5000` |
+| `CORS_ORIGIN` | default `http://localhost:5173` |
+
+## MongoDB — database `deskrobo`
+Collections: `users`, `sessions`, `metrics`, `conversations`.
+One reusable `MongoClient` (`db.ts`) is shared across all requests — never one
+per request.
 
 ## API
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET  | `/api/neo/health` | health + device-connected flag |
-| GET  | `/api/neo/metrics` | latest metrics + session stats |
-| POST | `/api/neo/command` | `{ command, message? }` → ESP32 |
-| POST | `/api/neo/monitoring/start` \| `/stop` | toggle session stats |
-| POST | `/api/neo/chat` | `{ message }` → Gemini reply (uses tools) |
+| GET  | `/health` | health check |
+| POST | `/api/chat` | `{ message, sessionId?, userId? }` → `{ reply, sessionId, timestamp }` |
+| POST | `/api/sessions` | create a session → `{ sessionId }` |
+| GET  | `/api/sessions/:id` | fetch a session |
+| POST | `/api/sessions/:id/end` | end + aggregate a session |
+| POST | `/api/sessions/:id/metrics` | append a derived metric sample |
 
-## WebSocket
-- Producer (Python): `ws://localhost:8080/cv` — send `NeoMetrics` JSON frames.
-- Consumer (React): `ws://localhost:8080/dashboard` — receives
-  `{ type: 'metrics' | 'command' | 'monitoring', payload }`.
+`/api/chat` fetches the latest metrics/session from MongoDB, builds a concise
+NEO context, sends **context + message** to Gemini (`@google/genai`), saves the
+exchange in `conversations`, and returns the reply. Only derived metrics are
+sent to Gemini — never webcam frames or video.
 
-## Gemini tools
-`get_current_attention`, `get_session_stats`, `start_monitoring`,
-`stop_monitoring`, `take_break` — the model calls these to read live data or act.
+## Notes
+- Gemini logic is isolated in `services/geminiService.ts`.
+- NEO describes values as **behavioral indicators/estimates** and never claims
+  medical diagnosis.

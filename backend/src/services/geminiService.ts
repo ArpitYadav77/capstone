@@ -1,75 +1,38 @@
 /**
- * geminiService — the NEO voice-assistant reasoning layer.
+ * geminiService — isolated Gemini reasoning for the NEO assistant.
  *
- * Uses the official Google GenAI SDK (@google/genai) with function calling so
- * the model reads LIVE NEO metrics via backend tools instead of guessing.
- * Gemini is used ONLY for conversation/reasoning — never for webcam analysis,
- * and no video is ever sent to it.
+ * Uses the current official Google GenAI SDK (@google/genai). The API key stays
+ * server-side (GEMINI_API_KEY) and is never exposed to the browser. Only derived
+ * NEO metrics/context are sent — never webcam frames or video.
  */
-import { GoogleGenAI, Type } from '@google/genai'
-import { getLatest, getSessionStats } from '../state.js'
-import { runTool } from './neoTools.js'
+import { GoogleGenAI } from '@google/genai'
 
-const SYSTEM_INSTRUCTION = `You are NEO, a focus-and-wellbeing desk companion.
-- Answer briefly and conversationally (1–3 sentences) — your replies are spoken aloud.
-- For anything about the user's current focus, attention, fatigue, or session, CALL the tools to get real data; never invent numbers.
-- Talk in terms of attention and fatigue-related behavioral indicators. Never diagnose stress, emotion, or any medical condition.
-- If asked to start/stop monitoring or to take a break, call the matching tool.`
+const SYSTEM_INSTRUCTION = `You are NEO, an AI desk companion.
+- Answer concisely and naturally (1-3 sentences) — replies may be spoken aloud.
+- When the user asks about focus, attention, fatigue or their session, use the supplied NEO metrics/context. If no metrics are provided, say so briefly.
+- Describe all values as behavioral indicators or estimates.
+- Never claim to medically diagnose stress, mental health, emotions, or cognitive disorders.`
 
-const NO_ARGS = { type: Type.OBJECT, properties: {} }
-
-const functionDeclarations = [
-  { name: 'get_current_attention', description: "Get the user's current attention score, fatigue indicator, gaze, blink rate and status.", parameters: NO_ARGS },
-  { name: 'get_session_stats', description: 'Get session focus stats: current & average attention, focus duration, distraction events.', parameters: NO_ARGS },
-  { name: 'start_monitoring', description: 'Start counting a focus-monitoring session.', parameters: NO_ARGS },
-  { name: 'stop_monitoring', description: 'Stop the focus-monitoring session.', parameters: NO_ARGS },
-  { name: 'take_break', description: 'Suggest a short break and signal the NEO device.', parameters: NO_ARGS },
-]
-
-function contextLine(): string {
-  const m = getLatest()
-  const s = getSessionStats()
-  if (!m) return 'Live NEO context: CV engine not connected yet.'
-  return `Live NEO context — current attention: ${m.attentionScore}%, average: ${s.averageAttention}%, status: ${m.status}, gaze: ${m.gaze.direction}, distraction events: ${s.distractionEvents}.`
+export function geminiModel(): string {
+  return process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash'
 }
 
-export interface ChatResult {
-  reply: string
-  toolsUsed: string[]
-}
-
-export async function chat(userMessage: string): Promise<ChatResult> {
+/**
+ * Generate a reply from a NEO context string + the user's message.
+ * Throws a clear error if the key is missing or the request fails.
+ */
+export async function generateReply(userMessage: string, context: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY?.trim()
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not set. Add it to backend/.env to enable the assistant.')
   }
 
   const ai = new GoogleGenAI({ apiKey })
-  const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash'
-
-  const chatSession = ai.chats.create({
-    model,
-    config: {
-      systemInstruction: `${SYSTEM_INSTRUCTION}\n${contextLine()}`,
-      tools: [{ functionDeclarations }],
-    },
+  const response = await ai.models.generateContent({
+    model: geminiModel(),
+    contents: `${context}\n\nUser: ${userMessage}`,
+    config: { systemInstruction: SYSTEM_INSTRUCTION },
   })
 
-  const toolsUsed: string[] = []
-  let response = await chatSession.sendMessage({ message: userMessage })
-
-  let guard = 0
-  while (response.functionCalls && response.functionCalls.length > 0 && guard < 5) {
-    guard += 1
-    const parts = []
-    for (const call of response.functionCalls) {
-      const name = call.name ?? ''
-      toolsUsed.push(name)
-      const result = await runTool(name, (call.args as Record<string, unknown>) ?? {})
-      parts.push({ functionResponse: { name, response: { result } } })
-    }
-    response = await chatSession.sendMessage({ message: parts })
-  }
-
-  return { reply: response.text ?? "I couldn't produce a reply.", toolsUsed }
+  return response.text?.trim() || "I couldn't produce a reply just now."
 }

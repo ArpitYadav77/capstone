@@ -1,30 +1,35 @@
 /**
- * NEO backend entry point.
- *   HTTP  → REST API (/api/neo/*) for the React app
- *   WS    → hub: /cv (Python producer) → /dashboard (React consumers)
+ * NEO backend — Express + MongoDB + Gemini.
+ * Connects (and pings) MongoDB first, then starts the HTTP server.
  */
 import 'dotenv/config'
-import http from 'node:http'
 import express from 'express'
 import cors from 'cors'
-import { neoRouter } from './routes/neo.js'
-import { attachWebSocket } from './websocket.js'
+import { connectDB } from './db.js'
+import { chatRouter } from './routes/chat.js'
+import { sessionsRouter } from './routes/sessions.js'
 
 const app = express()
-const PORT = Number(process.env.PORT ?? 8080)
+const PORT = Number(process.env.PORT ?? 5000)
 
-app.use(cors({ origin: process.env.CORS_ORIGIN ?? '*' }))
+app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173' }))
 app.use(express.json())
 
-app.get('/', (_req, res) => res.json({ service: 'neo-backend', status: 'ok' }))
-app.use('/api/neo', neoRouter)
+app.get('/health', (_req, res) => res.json({ ok: true }))
+app.use('/api/chat', chatRouter)
+app.use('/api/sessions', sessionsRouter)
 
-const server = http.createServer(app)
-attachWebSocket(server)
+async function main(): Promise<void> {
+  // First make the MongoDB connection work (fail fast if it doesn't).
+  await connectDB()
 
-server.listen(PORT, () => {
-  console.log(`[NEO] backend on http://localhost:${PORT}`)
-  console.log(`[NEO] dashboard WS: ws://localhost:${PORT}/dashboard`)
-  console.log(`[NEO] CV engine WS: ws://localhost:${PORT}/cv`)
-  console.log(`[NEO] Gemini: ${process.env.GEMINI_API_KEY ? 'enabled' : 'disabled (set GEMINI_API_KEY)'}`)
+  app.listen(PORT, () => {
+    console.log(`[NEO] backend on http://localhost:${PORT}`)
+    console.log(`[NEO] Gemini: ${process.env.GEMINI_API_KEY ? 'enabled' : 'disabled (set GEMINI_API_KEY)'}`)
+  })
+}
+
+main().catch((err) => {
+  console.error('[NEO] startup failed:', (err as Error).message)
+  process.exit(1)
 })

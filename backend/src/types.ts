@@ -1,24 +1,40 @@
-/** Shared NEO data contract — identical to the frontend `NeoMetrics` type. */
-export interface NeoMetrics {
-  timestamp: number
-  faceDetected: boolean
-  gaze: { direction: 'CENTER' | 'LEFT' | 'RIGHT' | 'AWAY' }
-  eyes: { open: boolean; blink: boolean }
-  blinkRate: number
+/** Shared backend document/shape types for the deskrobo database. */
+
+export type GazeDirection = 'CENTER' | 'LEFT' | 'RIGHT' | 'AWAY'
+export type SessionStatus = 'FOCUSED' | 'DISTRACTED' | 'FATIGUED'
+
+/** A single derived metric sample (never raw video). Stored in `metrics`. */
+export interface MetricDoc {
+  sessionId: string
+  userId?: string
   attentionScore: number
   fatigueIndicator: number
-  status: 'FOCUSED' | 'DISTRACTED' | 'FATIGUED'
+  blinkRate: number
+  gaze: GazeDirection
+  faceDetected: boolean
+  status: SessionStatus
+  timestamp: number
+  createdAt: Date
 }
 
-/** Commands the backend can dispatch to the ESP32 speaker device. */
-export type NeoCommand = 'FOCUS_LOW' | 'BREAK' | 'GREETING' | 'CUSTOM_MESSAGE'
+/** A monitoring session. Stored in `sessions`. */
+export interface SessionDoc {
+  userId?: string
+  startTime: Date
+  endTime?: Date
+  averageAttention?: number
+  focusDuration?: number // seconds
+  distractionEvents?: number
+  averageBlinkRate?: number
+  fatigueIndicator?: number
+}
 
-export interface SessionStats {
-  active: boolean
-  startedAt: number | null
-  focusDurationSec: number
-  currentAttention: number
-  averageAttention: number
-  distractionEvents: number
-  samples: number
+/** A saved chat exchange. Stored in `conversations`. */
+export interface ConversationDoc {
+  sessionId: string
+  userId?: string
+  userMessage: string
+  reply: string
+  model: string
+  timestamp: Date
 }

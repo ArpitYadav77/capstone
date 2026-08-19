@@ -1,10 +1,13 @@
 /**
- * neoApi — REST client for the NEO backend (ESP32 commands + Gemini chat).
- * Base URL is configurable via VITE_NEO_API_URL (default http://localhost:8080).
+ * neoApi — REST client for the NEO backend.
+ * Base URL is configurable via VITE_NEO_API_URL (default http://localhost:5000).
+ *
+ * The Gemini API key and MongoDB credentials live ONLY on the backend — this
+ * client just POSTs a message and receives the model's reply.
  */
 import type { NeoCommand } from './neoTypes'
 
-const BASE = (import.meta.env.VITE_NEO_API_URL as string | undefined) ?? 'http://localhost:8080'
+const BASE = (import.meta.env.VITE_NEO_API_URL as string | undefined) ?? 'http://localhost:5000'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
@@ -19,24 +22,34 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 
 export interface ChatResponse {
   reply: string
-  toolsUsed: string[]
+  sessionId: string
+  timestamp: string
+}
+
+export interface ChatOptions {
+  sessionId?: string
+  userId?: string
 }
 
 export const neoApi = {
   base: BASE,
 
-  chat(message: string): Promise<ChatResponse> {
-    return post<ChatResponse>('/api/neo/chat', { message })
+  /** Ask NEO — reaches Express → MongoDB context → Gemini → saved conversation. */
+  chat(message: string, opts: ChatOptions = {}): Promise<ChatResponse> {
+    return post<ChatResponse>('/api/chat', {
+      message,
+      sessionId: opts.sessionId,
+      userId: opts.userId,
+    })
   },
 
+  // --- Device/monitoring helpers (ESP32 not implemented yet; degrade gracefully) ---
   command(command: NeoCommand, message?: string) {
     return post('/api/neo/command', { command, message })
   },
-
   startMonitoring() {
     return post('/api/neo/monitoring/start', {})
   },
-
   stopMonitoring() {
     return post('/api/neo/monitoring/stop', {})
   },
