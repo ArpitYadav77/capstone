@@ -42,8 +42,8 @@ export function Login() {
           </div>
           <Panel className="p-8">
             <Eyebrow>Sign in</Eyebrow>
-            <h1 className="mt-4 font-display text-2xl font-semibold text-white">Welcome back</h1>
-            <p className="mt-2 text-sm text-[#8a97a5]">
+            <h1 className="mt-4 font-display text-2xl font-semibold text-ink">Welcome back</h1>
+            <p className="mt-2 text-sm text-ink-soft">
               Continue to your private cognitive-wellness workspace.
             </p>
 
@@ -68,7 +68,7 @@ export function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
               />
-              {error && <p className="text-sm text-warm">{error}</p>}
+              {error && <p className="text-sm text-danger">{error}</p>}
               <Button
                 type="submit"
                 className="w-full"
@@ -80,13 +80,13 @@ export function Login() {
             </form>
           </Panel>
 
-          <p className="mt-6 text-center text-sm text-[#8a97a5]">
+          <p className="mt-6 text-center text-sm text-ink-soft">
             New to DeskRobo?{' '}
-            <Link to="/register" className="text-neon-cyan hover:underline">
+            <Link to="/register" className="text-teal hover:underline">
               Create an account
             </Link>
           </p>
-          <p className="mt-8 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-[#5b6672]">
+          <p className="mt-8 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
             Demo session · data stored locally in your browser
           </p>
         </div>

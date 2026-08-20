@@ -12,7 +12,7 @@ export function TrendBars({
   values,
   max,
   height = 120,
-  color = '#57e0ff',
+  color = '#12AFC2',
   highlightLast = true,
 }: TrendBarsProps) {
   const n = Math.max(values.length, 1)
@@ -36,8 +36,8 @@ export function TrendBars({
             width={barW}
             height={h}
             rx={1.2}
-            fill={last ? '#69f0b4' : color}
-            opacity={last ? 0.95 : 0.5}
+            fill={last ? '#55B889' : color}
+            opacity={last ? 0.95 : 0.55}
           />
         )
       })}

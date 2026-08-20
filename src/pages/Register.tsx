@@ -44,10 +44,10 @@ export function Register() {
           </div>
           <Panel className="p-8">
             <Eyebrow>Create account</Eyebrow>
-            <h1 className="mt-4 font-display text-2xl font-semibold text-white">
+            <h1 className="mt-4 font-display text-2xl font-semibold text-ink">
               Start your first check
             </h1>
-            <p className="mt-2 text-sm text-[#8a97a5]">
+            <p className="mt-2 text-sm text-ink-soft">
               Your account and data stay local to this browser for the prototype.
             </p>
 
@@ -81,7 +81,7 @@ export function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
               />
-              {error && <p className="text-sm text-warm">{error}</p>}
+              {error && <p className="text-sm text-danger">{error}</p>}
               <Button
                 type="submit"
                 className="w-full"
@@ -93,9 +93,9 @@ export function Register() {
             </form>
           </Panel>
 
-          <p className="mt-6 text-center text-sm text-[#8a97a5]">
+          <p className="mt-6 text-center text-sm text-ink-soft">
             Already have an account?{' '}
-            <Link to="/login" className="text-neon-cyan hover:underline">
+            <Link to="/login" className="text-teal hover:underline">
               Sign in
             </Link>
           </p>

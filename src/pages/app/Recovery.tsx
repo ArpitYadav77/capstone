@@ -30,10 +30,10 @@ export function Recovery() {
   return (
     <div className="mx-auto max-w-5xl" key={version}>
       <Eyebrow>Recovery</Eyebrow>
-      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
         Reset &amp; recover
       </h1>
-      <p className="mt-2 max-w-xl text-sm text-[#8a97a5]">
+      <p className="mt-2 max-w-xl text-sm text-ink-soft">
         Short, practical activities to ease possible elevated cognitive load. Completing one logs it
         to your recovery statistics.
       </p>
@@ -49,17 +49,17 @@ export function Recovery() {
         {recommendations.map((rec) => {
           const done = completedToday.has(rec.id)
           return (
-            <Panel key={rec.id} className="flex flex-col p-6">
+            <Panel key={rec.id} interactive className="flex flex-col p-6">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neon-cyan/70">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-teal">
                   {rec.category}
                 </span>
-                <span className="inline-flex items-center gap-1 text-[12px] text-[#7c8894]">
+                <span className="inline-flex items-center gap-1 text-[12px] text-ink-muted">
                   <Clock className="h-3 w-3" /> {rec.durationMin} min
                 </span>
               </div>
-              <h3 className="mt-4 font-display text-lg font-semibold text-white">{rec.title}</h3>
-              <p className="mt-2 flex-1 text-[14px] leading-relaxed text-[#98a4b0]">
+              <h3 className="mt-4 font-display text-lg font-semibold text-ink">{rec.title}</h3>
+              <p className="mt-2 flex-1 text-[14px] leading-relaxed text-ink-soft">
                 {rec.description}
               </p>
               <div className="mt-5">

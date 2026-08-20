@@ -8,13 +8,13 @@ import { Panel } from '@/components/ui/Panel'
 import { Button } from '@/components/ui/Button'
 import { Stat } from '@/components/ui/Stat'
 import { Eyebrow } from '@/components/ui/Eyebrow'
-import { TrendBars } from '@/components/ui/TrendBars'
-import { fadeUp, hoverLift, staggerContainer } from '@/lib/motion'
+import { AreaLineChart } from '@/components/charts/AreaLineChart'
+import { fadeUp, staggerContainer } from '@/lib/motion'
 
-/** Grid item wrapper: staggered fade-up entrance + a gentle hover lift. */
+/** Grid item wrapper: staggered fade-up entrance (hover handled by the cards). */
 function Tile({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <motion.div variants={fadeUp} className={className} {...hoverLift}>
+    <motion.div variants={fadeUp} className={className}>
       {children}
     </motion.div>
   )
@@ -54,11 +54,11 @@ export function Dashboard() {
       <motion.div variants={fadeUp} className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Eyebrow>Dashboard</Eyebrow>
-          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
             Your cognitive state
           </h1>
           {week.isDemo && (
-            <p className="mt-2 text-sm text-[#7c8894]">
+            <p className="mt-2 text-sm text-ink-soft">
               Showing sample data — run a session to see your own.
             </p>
           )}
@@ -85,48 +85,58 @@ export function Dashboard() {
 
       <motion.div variants={staggerContainer} className="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <Tile>
-          <Panel className="h-full p-6">
+          <Panel chart className="h-full p-6">
           <div className="flex items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#7c8894]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
               Estimated load · last 7 days
             </p>
-            <span className="text-[12px] text-[#7c8894]">
+            <span className="text-[12px] text-ink-muted">
               trend {week.loadTrend > 0 ? '+' : ''}
               {week.loadTrend}%
             </span>
           </div>
-          <div className="mt-5 h-32">
-            <TrendBars values={week.summaries.map((s) => s.avgLoad)} max={100} />
+          <div className="mt-3">
+            <AreaLineChart
+              data={week.summaries.map((s) => ({ date: s.date, load: s.avgLoad, attention: s.avgAttention }))}
+              yMax={100}
+              height={150}
+              ariaLabel="Estimated cognitive load, last 7 days"
+              series={[{ key: 'load', color: '#12AFC2', label: 'Cognitive Load', fill: true }]}
+              tooltipFields={[
+                { key: 'load', label: 'Cognitive Load', color: '#12AFC2' },
+                { key: 'attention', label: 'Attention', unit: '%', color: '#55B889' },
+              ]}
+            />
           </div>
           </Panel>
         </Tile>
 
         <Tile>
-          <Panel className="h-full p-6">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#7c8894]">
+          <Panel interactive className="h-full p-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
             Recent sessions
           </p>
           <div className="mt-4 space-y-2.5">
             {sessions.length === 0 ? (
-              <p className="text-sm text-[#7c8894]">No sessions yet.</p>
+              <p className="text-sm text-ink-muted">No sessions yet.</p>
             ) : (
               sessions.slice(0, 4).map((s) => (
                 <div key={s.id} className="flex items-center justify-between text-sm">
-                  <span className="text-[#c3ccd6]">
+                  <span className="text-ink-soft">
                     {new Date(s.startedAt).toLocaleDateString(undefined, {
                       month: 'short',
                       day: 'numeric',
                     })}
                   </span>
-                  <span className="font-mono text-[#8a97a5]">{formatDuration(s.durationSec)}</span>
-                  <span className="text-neon-cyan">load {s.avgLoad}</span>
+                  <span className="font-mono text-ink-muted">{formatDuration(s.durationSec)}</span>
+                  <span className="text-teal">load {s.avgLoad}</span>
                 </div>
               ))
             )}
           </div>
           <button
             onClick={() => navigate('/app/analytics')}
-            className="mt-5 inline-flex items-center gap-1.5 text-sm text-neon-cyan/80 hover:text-neon-cyan"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm text-teal hover:text-[#0f9aab]"
           >
             View analytics <ArrowRight className="h-3.5 w-3.5" />
           </button>

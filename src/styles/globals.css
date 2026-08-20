@@ -3,11 +3,39 @@
 @tailwind utilities;
 
 @layer base {
+  /* ────────────────────────────────────────────────────────────────
+     Centralized design tokens — the single source of truth for the
+     unified warm/light theme. Components should consume these (or the
+     matching Tailwind color tokens) rather than hard-coding colors.
+     ──────────────────────────────────────────────────────────────── */
   :root {
-    color-scheme: dark;
-    --bg: #06080a;
-    --fg: #e7edf2;
-    --muted: #8a97a5;
+    color-scheme: light;
+
+    --bg: #f5f3ee; /* primary background */
+    --surface: #eceae4; /* secondary background / sidebar */
+    --surface-secondary: #eceae4;
+    --card: #ffffff; /* primary card surface */
+    --card-soft: #f0eee8; /* soft / inset card */
+
+    --text: #171717; /* primary text */
+    --text-muted: #66645e; /* secondary text */
+    --text-subtle: #8a8881; /* muted / tertiary text */
+    --border: #dcd9d1; /* hairline border */
+
+    --accent: #12afc2; /* primary accent (teal) */
+    --accent-soft: #ddf7f7; /* accent tint */
+    --positive: #55b889;
+    --positive-soft: #e3f5ea;
+    --highlight: #f4c84a; /* warm yellow */
+    --warning: #e7a54a; /* warm orange */
+    --danger: #d96b63; /* soft red */
+
+    --radius: 18px;
+    --shadow: 0 8px 30px rgba(30, 30, 20, 0.05);
+
+    /* Legacy aliases kept for any remaining references. */
+    --fg: var(--text);
+    --muted: var(--text-muted);
   }
 
   html {
@@ -16,7 +44,7 @@
   }
 
   body {
-    @apply bg-base text-[#e7edf2] font-sans antialiased;
+    @apply bg-ivory text-ink font-sans antialiased;
     font-feature-settings: 'ss01', 'cv01', 'cv11';
     text-rendering: optimizeLegibility;
     /* `clip` prevents horizontal scroll without creating a scroll container,
@@ -36,28 +64,36 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
     }
+    /* Suppress hover transforms entirely for reduced-motion users. */
+    .interactive-card:hover,
+    .interactive-chart:hover,
+    .hover-media:hover .hover-media-target,
+    .hover-media:hover img,
+    .hover-media:hover video {
+      transform: none !important;
+    }
   }
 
   ::selection {
-    background: rgba(87, 224, 255, 0.24);
-    color: #ffffff;
+    background: rgba(18, 175, 194, 0.18);
+    color: #171717;
   }
 
-  /* Slim, deep-tech scrollbar. */
+  /* Slim, warm-neutral scrollbar. */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #06080a;
+    background: #eceae4;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1f2732;
+    background: #dcd9d1;
     border-radius: 8px;
-    border: 2px solid #06080a;
+    border: 2px solid #eceae4;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2a3542;
+    background: #c9c5bb;
   }
 }
 
@@ -66,32 +102,80 @@
     @apply mx-auto w-full max-w-container px-6 sm:px-8 lg:px-10;
   }
 
-  /* Restrained glass panel — thin border, low-opacity fill, no heavy blur. */
-  .glass {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  /* Premium light surface — white card, hairline border, soft warm shadow.
+     `.glass` kept as the class name so existing Panel usage inherits it. */
+  .glass,
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
   }
 
   .hairline {
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
   }
 
+  /* Small teal eyebrow label above headings. */
   .eyebrow {
-    @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-neon-cyan/80;
+    @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-teal;
   }
 
   .text-gradient {
-    background: linear-gradient(180deg, #ffffff 0%, #a9b6c2 100%);
+    background: linear-gradient(180deg, #2a2a2a 0%, #6b6862 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
   .accent-glow {
-    text-shadow: 0 0 24px rgba(87, 224, 255, 0.35);
+    text-shadow: 0 0 24px rgba(18, 175, 194, 0.25);
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+     Reusable premium hover system. Consume these instead of
+     duplicating hover styles per component.
+     ──────────────────────────────────────────────────────────────── */
+
+  /* Cards / surfaces — gentle lift + scale, stronger shadow, teal border. */
+  .interactive-card {
+    transition:
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 240ms ease,
+      border-color 240ms ease;
+    will-change: transform;
+  }
+  .interactive-card:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 16px 44px rgba(30, 30, 20, 0.09);
+    border-color: rgba(18, 175, 194, 0.35);
+  }
+
+  /* Chart containers — a smaller 2px lift so charts stay readable. */
+  .interactive-chart {
+    transition:
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 240ms ease,
+      border-color 240ms ease;
+  }
+  .interactive-chart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 44px rgba(30, 30, 20, 0.09);
+    border-color: rgba(18, 175, 194, 0.28);
+  }
+
+  /* Media (image / video) — subtle zoom; wrapper must clip overflow. */
+  .hover-media {
+    overflow: hidden;
+  }
+  .hover-media .hover-media-target,
+  .hover-media img,
+  .hover-media video {
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .hover-media:hover .hover-media-target,
+  .hover-media:hover img,
+  .hover-media:hover video {
+    transform: scale(1.015);
   }
 }
 

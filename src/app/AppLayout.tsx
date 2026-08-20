@@ -15,7 +15,6 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/auth/AuthContext'
 import { Logo } from '@/components/layout/Logo'
-import { StaticBackground } from '@/components/layout/StaticBackground'
 import { notificationService } from '@/services'
 import { cn } from '@/lib/cn'
 
@@ -39,7 +38,7 @@ function NotificationsBell({ userId }: { userId: string }) {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative grid h-10 w-10 place-items-center rounded-lg text-[#c3ccd6] hairline transition-colors hover:text-white"
+        className="relative grid h-10 w-10 place-items-center rounded-lg border border-line bg-card text-ink-soft transition-colors hover:text-ink hover:border-ink/20"
         aria-label="Notifications"
       >
         <Bell className="h-[18px] w-[18px]" strokeWidth={1.6} />
@@ -51,7 +50,7 @@ function NotificationsBell({ userId }: { userId: string }) {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 500, damping: 24 }}
-              className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-neon-cyan px-1 text-[10px] font-semibold text-base-950"
+              className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-teal px-1 text-[10px] font-semibold text-white"
             >
               {unread}
             </motion.span>
@@ -61,9 +60,9 @@ function NotificationsBell({ userId }: { userId: string }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-line bg-base-900/95 p-2 backdrop-blur-xl">
+          <div className="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-line bg-card p-2 shadow-card-hover">
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#8a97a5]">
+              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-muted">
                 Notifications
               </span>
               {items.length > 0 && (
@@ -72,7 +71,7 @@ function NotificationsBell({ userId }: { userId: string }) {
                     notificationService.markAllRead(userId)
                     setVersion((v) => v + 1)
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] text-neon-cyan/80 hover:text-neon-cyan"
+                  className="inline-flex items-center gap-1 text-[11px] text-teal hover:text-[#0f9aab]"
                 >
                   <Check className="h-3 w-3" /> Mark all read
                 </button>
@@ -80,18 +79,18 @@ function NotificationsBell({ userId }: { userId: string }) {
             </div>
             <div className="max-h-80 overflow-y-auto">
               {items.length === 0 ? (
-                <p className="px-3 py-6 text-center text-[13px] text-[#7c8894]">Nothing yet.</p>
+                <p className="px-3 py-6 text-center text-[13px] text-ink-muted">Nothing yet.</p>
               ) : (
                 items.map((n) => (
                   <div
                     key={n.id}
                     className={cn(
                       'rounded-xl px-3 py-2.5',
-                      !n.read && 'bg-white/[0.03]',
+                      !n.read && 'bg-teal/[0.06]',
                     )}
                   >
-                    <p className="text-[13px] text-white">{n.title}</p>
-                    <p className="mt-0.5 text-[12px] leading-relaxed text-[#8a97a5]">{n.body}</p>
+                    <p className="text-[13px] text-ink">{n.title}</p>
+                    <p className="mt-0.5 text-[12px] leading-relaxed text-ink-soft">{n.body}</p>
                   </div>
                 ))
               )}
@@ -122,15 +121,33 @@ export function AppLayout() {
             to={item.to}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm transition-colors',
+                'group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm transition-colors',
                 isActive
-                  ? 'bg-white/[0.05] text-white'
-                  : 'text-[#aab6c2] hover:bg-white/[0.03] hover:text-white',
+                  ? 'bg-card text-ink shadow-[0_2px_10px_rgba(30,30,20,0.05)]'
+                  : 'text-ink-soft hover:bg-ink/[0.04] hover:text-ink',
               )
             }
           >
-            <Icon className="h-[18px] w-[18px]" strokeWidth={1.6} />
-            {item.label}
+            {({ isActive }) => (
+              <>
+                {/* Small teal active indicator — not a large glow. */}
+                <span
+                  className={cn(
+                    'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-teal transition-opacity',
+                    isActive ? 'opacity-100' : 'opacity-0',
+                  )}
+                  aria-hidden
+                />
+                <Icon
+                  className={cn(
+                    'h-[18px] w-[18px] transition-transform duration-200 group-hover:scale-110',
+                    isActive && 'text-teal',
+                  )}
+                  strokeWidth={1.6}
+                />
+                {item.label}
+              </>
+            )}
           </NavLink>
         )
       })}
@@ -138,59 +155,56 @@ export function AppLayout() {
   )
 
   return (
-    <>
-      <StaticBackground />
-      <div className="relative z-10 min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
-        {/* Sidebar (desktop) */}
-        <aside className="hidden border-r border-line lg:flex lg:flex-col">
-          <div className="px-6 py-6">
+    <div className="relative z-10 min-h-screen bg-ivory lg:grid lg:grid-cols-[260px_1fr]">
+      {/* Sidebar (desktop) — warm neutral, premium light */}
+      <aside className="hidden border-r border-line bg-sand lg:flex lg:flex-col">
+        <div className="px-6 py-6">
+          <Logo />
+        </div>
+        <nav className="flex flex-1 flex-col gap-1 px-4">{navItems}</nav>
+        <div className="border-t border-line p-4">
+          <button
+            onClick={onLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm text-ink-soft transition-colors hover:bg-ink/[0.04] hover:text-ink"
+          >
+            <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
+            Log out
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex min-w-0 flex-col">
+        {/* Top bar */}
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-line bg-ivory/90 px-5 py-3 backdrop-blur-xl sm:px-8">
+          <div className="lg:hidden">
             <Logo />
           </div>
-          <nav className="flex flex-1 flex-col gap-1 px-4">{navItems}</nav>
-          <div className="border-t border-line p-4">
+          <div className="hidden lg:block">
+            <p className="text-sm text-ink-soft">
+              Welcome back, <span className="font-medium text-ink">{user?.name}</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            {user && <NotificationsBell userId={user.id} />}
             <button
               onClick={onLogout}
-              className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm text-[#aab6c2] transition-colors hover:bg-white/[0.03] hover:text-white"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-line bg-card text-ink-soft transition-colors hover:text-ink hover:border-ink/20 lg:hidden"
+              aria-label="Log out"
             >
               <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
-              Log out
             </button>
           </div>
-        </aside>
+        </header>
 
-        <div className="flex min-w-0 flex-col">
-          {/* Top bar */}
-          <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-line bg-base-950/70 px-5 py-3 backdrop-blur-xl sm:px-8">
-            <div className="lg:hidden">
-              <Logo />
-            </div>
-            <div className="hidden lg:block">
-              <p className="text-sm text-[#8a97a5]">
-                Welcome back, <span className="text-white">{user?.name}</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              {user && <NotificationsBell userId={user.id} />}
-              <button
-                onClick={onLogout}
-                className="grid h-10 w-10 place-items-center rounded-lg text-[#c3ccd6] hairline transition-colors hover:text-white lg:hidden"
-                aria-label="Log out"
-              >
-                <LogOut className="h-[18px] w-[18px]" strokeWidth={1.6} />
-              </button>
-            </div>
-          </header>
+        {/* Mobile nav */}
+        <nav className="flex gap-1 overflow-x-auto border-b border-line bg-sand px-4 py-2 lg:hidden">
+          {navItems}
+        </nav>
 
-          {/* Mobile nav */}
-          <nav className="flex gap-1 overflow-x-auto border-b border-line px-4 py-2 lg:hidden">
-            {navItems}
-          </nav>
-
-          <main className="flex-1 px-5 py-8 sm:px-8 sm:py-10">
-            <Outlet />
-          </main>
-        </div>
+        <main className="flex-1 px-5 py-8 sm:px-8 sm:py-10">
+          <Outlet />
+        </main>
       </div>
-    </>
+    </div>
   )
 }

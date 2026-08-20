@@ -9,13 +9,13 @@ const RIGHT_LABELS = ['Connectivity', 'ESP32', 'Speaker', 'Attention Detection']
 function Label({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-2.5">
-      <span className="h-1.5 w-1.5 rounded-full bg-neon-cyan shadow-[0_0_10px_rgba(87,224,255,0.8)]" />
-      <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#c3ccd6]">{text}</span>
+      <span className="h-1.5 w-1.5 rounded-full bg-teal shadow-[0_0_10px_rgba(15,181,181,0.6)]" />
+      <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink">{text}</span>
     </div>
   )
 }
 
-/** Minimal typography stages layered over the pinned NEO scene. */
+/** Minimal charcoal typography stages layered over the light NEO reveal. */
 export function NeoHeroText({ progress }: { progress: MotionValue<number> }) {
   const navigate = useNavigate()
 
@@ -32,19 +32,22 @@ export function NeoHeroText({ progress }: { progress: MotionValue<number> }) {
         style={{ opacity: introOpacity }}
         className="absolute inset-x-0 top-[13%] flex flex-col items-center px-6 text-center"
       >
-        <p className="eyebrow mb-4">A premium desk companion</p>
-        <h1 className="font-display text-5xl font-semibold tracking-tightest text-white sm:text-6xl lg:text-7xl">
-          Meet NEO
-        </h1>
-        <p className="mt-4 max-w-md text-base text-[#a3afba] sm:text-lg">
-          Your intelligent desk companion.
+        <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.24em] text-ink-soft">
+          <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-teal align-middle" />
+          The engineering
+        </p>
+        <h2 className="font-display text-5xl font-semibold tracking-tightest text-ink sm:text-6xl">
+          Inside NEO
+        </h2>
+        <p className="mt-4 max-w-md text-base text-ink-soft sm:text-lg">
+          Premium hardware, thoughtfully engineered.
         </p>
       </motion.div>
 
       {/* Scroll hint */}
       <motion.div
         style={{ opacity: hintOpacity }}
-        className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-[#6b7783]"
+        className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-ink-soft"
       >
         <span className="font-mono text-[10px] uppercase tracking-[0.22em]">Scroll</span>
         <ArrowDown className="h-4 w-4 animate-float" />
@@ -67,18 +70,19 @@ export function NeoHeroText({ progress }: { progress: MotionValue<number> }) {
         </div>
       </motion.div>
 
-      {/* Stage 7 — final CTA */}
+      {/* Stage 7 — final CTA (anchored above the robot, never overlapping it) */}
       <motion.div
         style={{ opacity: ctaOpacity, pointerEvents: ctaPointer }}
-        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+        className="absolute inset-x-0 top-[10%] flex flex-col items-center px-6 text-center"
       >
-        <h2 className="font-display text-4xl font-semibold tracking-tightest text-white sm:text-5xl">
+        <h2 className="font-display text-4xl font-semibold tracking-tightest text-ink sm:text-5xl">
           Meet NEO.
         </h2>
-        <p className="mt-4 max-w-lg text-base text-[#a3afba] sm:text-lg">
+        <p className="mt-4 max-w-lg text-base text-ink-soft sm:text-lg">
           Understand your focus. Respond intelligently.
         </p>
         <Button
+          variant="ink"
           size="lg"
           className="mt-8"
           onClick={() => navigate('/app/session')}

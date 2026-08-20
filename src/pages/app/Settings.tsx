@@ -10,7 +10,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-display text-lg font-semibold text-white">{children}</h2>
+    <h2 className="font-display text-lg font-semibold text-ink">{children}</h2>
   )
 }
 
@@ -43,7 +43,7 @@ export function Settings() {
   return (
     <div className="mx-auto max-w-2xl pb-8">
       <Eyebrow>Settings</Eyebrow>
-      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
         Preferences
       </h1>
 
@@ -157,7 +157,7 @@ export function Settings() {
 
       <div className="mt-6 flex items-center gap-3">
         <Button onClick={save}>Save preferences</Button>
-        {saved && <span className="text-sm text-neon-green">Saved</span>}
+        {saved && <span className="text-sm text-positive">Saved</span>}
       </div>
     </div>
   )

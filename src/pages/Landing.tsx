@@ -1,31 +1,26 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { StaticBackground } from '@/components/layout/StaticBackground'
+import { Hero } from '@/components/sections/Hero'
+import { Story } from '@/components/landing/Story'
+import { HowSteps } from '@/components/landing/HowSteps'
 import { NeoHero } from '@/components/hero/NeoHero'
-import { HowItWorks } from '@/components/sections/HowItWorks'
-import { Features } from '@/components/sections/Features'
-import { DashboardPreview } from '@/components/sections/DashboardPreview'
 import { Privacy } from '@/components/sections/Privacy'
 import { CTA } from '@/components/sections/CTA'
 
 export function Landing() {
   return (
-    <>
-      {/* Static premium background — no canvas, no animation loop. */}
-      <StaticBackground />
-
-      <div className="relative z-10">
-        <Navbar />
-        <main>
-          <NeoHero />
-          <HowItWorks />
-          <Features />
-          <DashboardPreview />
-          <Privacy />
-          <CTA />
-        </main>
-        <Footer />
-      </div>
-    </>
+    <div className="relative min-h-screen bg-ivory text-ink">
+      <Navbar />
+      <main>
+        <Hero />
+        <Story />
+        <HowSteps />
+        {/* Premium hardware engineering reveal (scroll-driven 3D). */}
+        <NeoHero />
+        <Privacy />
+        <CTA />
+      </main>
+      <Footer />
+    </div>
   )
 }

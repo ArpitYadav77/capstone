@@ -35,8 +35,8 @@ function metricToMeasurement(m: NeoMetrics): Measurement {
 }
 
 const STATUS_COLOR: Record<NeoMetrics['status'], string> = {
-  FOCUSED: 'text-neon-green',
-  DISTRACTED: 'text-neon-cyan',
+  FOCUSED: 'text-positive',
+  DISTRACTED: 'text-teal',
   FATIGUED: 'text-warm',
 }
 
@@ -145,12 +145,12 @@ export function LiveSession() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Eyebrow>Live session</Eyebrow>
-          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
             NEO monitor
           </h1>
         </div>
         {/* Mode toggle — selecting Live requests the camera */}
-        <div className="inline-flex rounded-full border border-line p-1">
+        <div className="inline-flex rounded-full border border-line bg-card p-1">
           {(['DEMO', 'LIVE'] as const).map((opt) => (
             <button
               key={opt}
@@ -158,7 +158,7 @@ export function LiveSession() {
               onClick={() => setMode(opt)}
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-colors disabled:opacity-50',
-                mode === opt ? 'bg-white/[0.06] text-white' : 'text-[#8a97a5] hover:text-white',
+                mode === opt ? 'bg-teal text-white' : 'text-ink-soft hover:text-ink',
               )}
             >
               {opt === 'DEMO' ? <Cpu className="h-3.5 w-3.5" /> : <Camera className="h-3.5 w-3.5" />}
@@ -170,9 +170,9 @@ export function LiveSession() {
 
       {/* Status strip */}
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 rounded-full border border-neon-cyan/25 bg-neon-cyan/[0.05] px-3 py-1.5">
-          <ShieldCheck className="h-3.5 w-3.5 text-neon-cyan" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neon-cyan/90">
+        <span className="inline-flex items-center gap-2 rounded-full border border-teal/25 bg-teal/[0.07] px-3 py-1.5">
+          <ShieldCheck className="h-3.5 w-3.5 text-teal" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-teal">
             {mode === 'DEMO' ? 'Demo Perception · no camera' : 'Live Perception · webcam + MediaPipe (local)'}
           </span>
         </span>
@@ -181,10 +181,10 @@ export function LiveSession() {
             className={cn(
               'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em]',
               cv.status === 'running'
-                ? 'border-neon-green/25 bg-neon-green/[0.05] text-neon-green'
+                ? 'border-positive/30 bg-positive/[0.08] text-positive'
                 : cv.status === 'denied' || cv.status === 'error'
-                  ? 'border-warm/30 bg-warm/[0.06] text-warm'
-                  : 'border-line bg-white/[0.02] text-[#8a97a5]',
+                  ? 'border-warm/30 bg-warm/[0.10] text-warm'
+                  : 'border-line bg-card text-ink-soft',
             )}
           >
             {cv.status === 'requesting' || cv.status === 'loading' ? (
@@ -201,7 +201,7 @@ export function LiveSession() {
 
       {summary ? (
         <Panel className="mt-6 p-8">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-neon-green">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-positive">
             Session saved
           </p>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -229,7 +229,7 @@ export function LiveSession() {
             >
               {/* Camera feed */}
               <Panel className="relative overflow-hidden p-0">
-                <div className="relative aspect-video w-full bg-black/40">
+                <div className="relative aspect-video w-full bg-ink/[0.06]">
                   {/* Video is mirrored for a natural selfie view. */}
                   <video
                     ref={cv.videoRef}
@@ -241,23 +241,23 @@ export function LiveSession() {
                   />
                   {/* Overlays for non-running states */}
                   {cv.status !== 'running' && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-base-950/80 px-6 text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-card-soft/95 px-6 text-center">
                       {cv.status === 'requesting' && (
                         <>
-                          <Camera className="h-6 w-6 text-neon-cyan" />
-                          <p className="text-sm text-[#c3ccd6]">Allow camera access to start the live feed.</p>
+                          <Camera className="h-6 w-6 text-teal" />
+                          <p className="text-sm text-ink-soft">Allow camera access to start the live feed.</p>
                         </>
                       )}
                       {cv.status === 'loading' && (
                         <>
-                          <Loader2 className="h-6 w-6 animate-spin text-neon-cyan" />
-                          <p className="text-sm text-[#c3ccd6]">Loading on-device face model…</p>
+                          <Loader2 className="h-6 w-6 animate-spin text-teal" />
+                          <p className="text-sm text-ink-soft">Loading on-device face model…</p>
                         </>
                       )}
                       {cv.status === 'denied' && (
                         <>
                           <CameraOff className="h-6 w-6 text-warm" />
-                          <p className="text-sm text-[#c3ccd6]">
+                          <p className="text-sm text-ink-soft">
                             Camera permission was blocked. Allow it in your browser, then retry.
                           </p>
                           <Button size="sm" variant="secondary" onClick={cv.retry}>
@@ -268,19 +268,19 @@ export function LiveSession() {
                       {cv.status === 'error' && (
                         <>
                           <CameraOff className="h-6 w-6 text-warm" />
-                          <p className="text-sm text-[#c3ccd6]">{cv.error}</p>
+                          <p className="text-sm text-ink-soft">{cv.error}</p>
                           <Button size="sm" variant="secondary" onClick={cv.retry}>
                             Retry
                           </Button>
                         </>
                       )}
                       {cv.status === 'idle' && (
-                        <p className="text-sm text-[#7c8894]">Starting camera…</p>
+                        <p className="text-sm text-ink-muted">Starting camera…</p>
                       )}
                       {cv.embedded && (cv.status === 'denied' || cv.status === 'error') && (
-                        <p className="mt-1 max-w-xs text-[12px] leading-relaxed text-[#7c8894]">
+                        <p className="mt-1 max-w-xs text-[12px] leading-relaxed text-ink-muted">
                           You&apos;re viewing this inside an embedded preview, which blocks the camera.
-                          Open <span className="text-neon-cyan">{`${location.origin}/app/session`}</span>{' '}
+                          Open <span className="text-teal">{`${location.origin}/app/session`}</span>{' '}
                           in a normal Chrome or Edge tab.
                         </p>
                       )}
@@ -289,13 +289,13 @@ export function LiveSession() {
                   {/* Live badge + face indicator */}
                   {cv.status === 'running' && (
                     <>
-                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-base-950/70 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neon-green backdrop-blur">
-                        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-neon-green" /> Live
+                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-positive shadow-sm backdrop-blur">
+                        <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-positive" /> Live
                       </span>
                       <span
                         className={cn(
-                          'absolute right-3 top-3 rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] backdrop-blur',
-                          m?.faceDetected ? 'bg-neon-green/15 text-neon-green' : 'bg-warm/15 text-warm',
+                          'absolute right-3 top-3 rounded-full bg-white/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] shadow-sm backdrop-blur',
+                          m?.faceDetected ? 'text-positive' : 'text-warm',
                         )}
                       >
                         {m?.faceDetected ? 'Face detected' : 'No face'}
@@ -303,7 +303,7 @@ export function LiveSession() {
                     </>
                   )}
                 </div>
-                <p className="px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6b7783]">
+                <p className="px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">
                   Processed locally · no video is stored
                 </p>
               </Panel>
@@ -312,7 +312,7 @@ export function LiveSession() {
               <div className="flex flex-col gap-4">
                 <Panel className="p-6">
                   <div className="flex items-center justify-between">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#7c8894]">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
                       Attention
                     </p>
                     {m && (
@@ -330,13 +330,13 @@ export function LiveSession() {
                       </AnimatePresence>
                     )}
                   </div>
-                  <p className="mt-2 font-display text-5xl font-semibold text-white">
+                  <p className="mt-2 font-display text-5xl font-semibold text-ink">
                     {m ? <AnimatedNumber value={m.attentionScore} /> : '—'}
-                    <span className="text-2xl text-[#7c8894]">/100</span>
+                    <span className="text-2xl text-ink-muted">/100</span>
                   </p>
                   {history.length > 1 && (
                     <div className="mt-4 h-16">
-                      <TrendBars values={history} max={100} highlightLast={false} color="#69f0b4" />
+                      <TrendBars values={history} max={100} highlightLast={false} color="#55B889" />
                     </div>
                   )}
                 </Panel>
@@ -353,10 +353,10 @@ export function LiveSession() {
           {/* Timer + primary control */}
           <Panel className="mt-4 p-8">
             <div className="flex flex-col items-center text-center">
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#7c8894]">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
                 {running ? 'Session in progress' : 'Ready when you are'}
               </p>
-              <p className="mt-4 font-mono text-5xl font-medium tabular-nums text-white">
+              <p className="mt-4 font-mono text-5xl font-medium tabular-nums text-ink">
                 {fmt(elapsed)}
               </p>
               <div className="mt-8">
@@ -375,7 +375,7 @@ export function LiveSession() {
                 )}
               </div>
               {mode === 'LIVE' && cv.status !== 'running' && !running && (
-                <p className="mt-4 max-w-sm text-[13px] text-[#7c8894]">
+                <p className="mt-4 max-w-sm text-[13px] text-ink-muted">
                   The live feed starts automatically. Allow camera access to begin.
                 </p>
               )}
@@ -386,12 +386,12 @@ export function LiveSession() {
           {mode === 'DEMO' && running && demoCurrent && (
             <Panel className="mt-4 p-6">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#8a97a5]">Estimated cognitive load</span>
-                <span className="text-warm">{demoCurrent.cognitiveLoad}</span>
+                <span className="text-ink-soft">Estimated cognitive load</span>
+                <span className="font-medium text-warm">{demoCurrent.cognitiveLoad}</span>
               </div>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
+              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/[0.08]">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-neon-green via-warm to-warm transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-positive via-highlight to-warm transition-all duration-500"
                   style={{ width: `${demoCurrent.cognitiveLoad}%` }}
                 />
               </div>
@@ -405,13 +405,13 @@ export function LiveSession() {
           {/* Recommendation (LIVE, when not focused) */}
           {mode === 'LIVE' && recommendation && (
             <Panel className="mt-4 p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-neon-cyan/70">
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-teal">
                 Recommendation · {recommendation.category}
               </p>
-              <h3 className="mt-3 font-display text-lg font-semibold text-white">
+              <h3 className="mt-3 font-display text-lg font-semibold text-ink">
                 {recommendation.title}
               </h3>
-              <p className="mt-2 text-[14px] leading-relaxed text-[#98a4b0]">
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
                 {recommendation.description}
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -421,7 +421,7 @@ export function LiveSession() {
                 <Button size="sm" variant="secondary" onClick={sendBreak} leftIcon={<Send className="h-4 w-4" />}>
                   Send BREAK to NEO
                 </Button>
-                {deviceMsg && <span className="text-[13px] text-[#8a97a5]">{deviceMsg}</span>}
+                {deviceMsg && <span className="text-[13px] text-ink-soft">{deviceMsg}</span>}
               </div>
             </Panel>
           )}

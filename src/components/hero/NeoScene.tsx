@@ -50,18 +50,21 @@ function SceneContents({ progressRef, reducedMotion, quality }: Required<NeoScen
 
   return (
     <>
-      <color attach="background" args={['#070a0d']} />
-      <ambientLight intensity={0.32} />
-      <hemisphereLight args={['#2a3b47', '#05070a', 0.35]} />
+      {/* Warm light studio — the black NEO hardware is the contrast. */}
+      <color attach="background" args={['#EDE9E1']} />
+      <ambientLight intensity={0.75} />
+      <hemisphereLight args={['#fbf7ef', '#d8d2c6', 0.55]} />
       <directionalLight
         position={[4, 6, 5]}
-        intensity={1.5}
+        intensity={2.1}
+        color="#fff6ea"
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0005}
       />
-      <pointLight position={[-3.5, 1.5, -3]} intensity={8} distance={16} color="#57e0ff" />
-      <pointLight position={[3, -1, 3]} intensity={2.4} distance={10} color="#9fd8ff" />
+      <directionalLight position={[-5, 3, -2]} intensity={0.9} color="#ffffff" />
+      {/* restrained teal accent rim */}
+      <pointLight position={[-3.5, 1.5, -3]} intensity={4} distance={16} color="#0FB5B5" />
 
       <group ref={root}>
         <NeoModel progressRef={progressRef} reducedMotion={reducedMotion} />
@@ -69,17 +72,17 @@ function SceneContents({ progressRef, reducedMotion, quality }: Required<NeoScen
 
       <ContactShadows
         position={[0, -1.55, 0]}
-        opacity={0.5}
+        opacity={0.35}
         scale={11}
-        blur={2.6}
+        blur={2.8}
         far={4}
-        color="#000000"
+        color="#2a2620"
       />
 
       <Environment resolution={quality === 'high' ? 128 : 64} frames={1}>
-        <Lightformer intensity={1.1} position={[0, 3, 3]} scale={[6, 3, 1]} color="#ffffff" />
-        <Lightformer intensity={0.7} position={[-4, 1, -2]} scale={[4, 5, 1]} color="#57e0ff" />
-        <Lightformer intensity={0.5} position={[4, 0, -3]} scale={[3, 4, 1]} color="#9fe6ff" />
+        <Lightformer intensity={1.6} position={[0, 3, 3]} scale={[7, 4, 1]} color="#ffffff" />
+        <Lightformer intensity={1.0} position={[-4, 1, -2]} scale={[4, 5, 1]} color="#fff2e2" />
+        <Lightformer intensity={0.5} position={[4, 0, -3]} scale={[3, 4, 1]} color="#bff0ef" />
       </Environment>
 
       <CameraRig progressRef={progressRef} />

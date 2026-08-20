@@ -112,10 +112,10 @@ export function Assistant() {
   return (
     <div className="mx-auto max-w-3xl">
       <Eyebrow>NEO Assistant</Eyebrow>
-      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
         Talk to NEO
       </h1>
-      <p className="mt-2 max-w-xl text-sm text-[#8a97a5]">
+      <p className="mt-2 max-w-xl text-sm text-ink-soft">
         Ask about your focus and NEO answers using your live and session metrics. Voice is optional —
         speak or type. Powered by Gemini (conversation only; no video is ever sent).
       </p>
@@ -127,7 +127,7 @@ export function Assistant() {
             key={ex}
             onClick={() => ask(ex)}
             disabled={busy}
-            className="rounded-full border border-line bg-white/[0.02] px-3 py-1.5 text-[13px] text-[#c3ccd6] transition-colors hover:border-neon-cyan/30 hover:text-white disabled:opacity-50"
+            className="rounded-full border border-line bg-card px-3 py-1.5 text-[13px] text-ink-soft transition-colors hover:border-teal/40 hover:text-ink disabled:opacity-50"
           >
             {ex}
           </button>
@@ -137,7 +137,7 @@ export function Assistant() {
       {/* Conversation */}
       <Panel className="mt-6 min-h-[220px] p-5">
         {turns.length === 0 ? (
-          <p className="py-10 text-center text-sm text-[#7c8894]">
+          <p className="py-10 text-center text-sm text-ink-muted">
             Start by asking “NEO, how focused am I?”
           </p>
         ) : (
@@ -154,12 +154,12 @@ export function Assistant() {
                   className={cn(
                     'max-w-[85%] rounded-2xl px-4 py-2.5 text-[15px]',
                     t.role === 'user'
-                      ? 'bg-neon-cyan/[0.12] text-white'
-                      : 'border border-line bg-white/[0.02] text-[#dbe2e8]',
+                      ? 'bg-ink text-ivory'
+                      : 'border border-line bg-card-soft text-ink',
                   )}
                 >
                   {t.role === 'neo' && (
-                    <div className="mb-1 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-neon-cyan/70">
+                    <div className="mb-1 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-teal">
                       <Volume2 className="h-3 w-3" /> NEO
                     </div>
                   )}
@@ -169,7 +169,7 @@ export function Assistant() {
                       {[...new Set(t.tools)].map((tool) => (
                         <span
                           key={tool}
-                          className="rounded-full bg-white/[0.05] px-2 py-0.5 font-mono text-[10px] text-[#8a97a5]"
+                          className="rounded-full bg-ink/[0.06] px-2 py-0.5 font-mono text-[10px] text-ink-soft"
                         >
                           {tool}()
                         </span>
@@ -185,7 +185,7 @@ export function Assistant() {
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="flex items-center gap-2 text-sm text-[#7c8894]"
+                  className="flex items-center gap-2 text-sm text-ink-muted"
                 >
                   NEO is thinking <ThinkingDots />
                 </motion.div>
@@ -201,7 +201,7 @@ export function Assistant() {
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mt-3 text-sm text-warm"
+            className="mt-3 text-sm text-danger"
           >
             {error}
           </motion.p>
@@ -225,14 +225,14 @@ export function Assistant() {
             className={cn(
               'relative grid h-11 w-11 shrink-0 place-items-center rounded-xl border transition-colors',
               listening
-                ? 'border-neon-cyan/50 bg-neon-cyan/15 text-neon-cyan'
-                : 'border-line bg-white/[0.02] text-[#c3ccd6] hover:text-white',
+                ? 'border-teal/50 bg-teal/10 text-teal'
+                : 'border-line bg-card text-ink-soft hover:text-ink',
             )}
             aria-label={listening ? 'Stop listening' : 'Start voice input'}
           >
             {listening && (
               <motion.span
-                className="pointer-events-none absolute inset-0 rounded-xl border border-neon-cyan/60"
+                className="pointer-events-none absolute inset-0 rounded-xl border border-teal/60"
                 animate={{ scale: [1, 1.25], opacity: [0.6, 0] }}
                 transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
               />
@@ -245,7 +245,7 @@ export function Assistant() {
         </Button>
       </form>
 
-      <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[#5b6672]">
+      <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
         Requires the NEO backend running with a Gemini API key.
       </p>
     </div>

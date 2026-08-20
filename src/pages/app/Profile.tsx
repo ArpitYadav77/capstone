@@ -25,7 +25,7 @@ export function Profile() {
   return (
     <div className="mx-auto max-w-2xl">
       <Eyebrow>Profile</Eyebrow>
-      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
         Your account
       </h1>
 
@@ -44,12 +44,12 @@ export function Profile() {
           />
           <div className="flex items-center gap-3">
             <Button type="submit">Save changes</Button>
-            {saved && <span className="text-sm text-neon-green">Saved</span>}
+            {saved && <span className="text-sm text-positive">Saved</span>}
           </div>
         </form>
       </Panel>
 
-      <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-[#5b6672]">
+      <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
         Prototype · account &amp; data are stored locally in this browser
       </p>
     </div>

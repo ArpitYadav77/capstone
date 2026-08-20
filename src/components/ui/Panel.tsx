@@ -2,20 +2,23 @@ import type { HTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
 interface PanelProps extends HTMLAttributes<HTMLDivElement> {
-  /** Adds a subtle interactive hover treatment. */
+  /** Adds the premium lift + teal-border hover treatment. */
   interactive?: boolean
+  /** Chart-container hover: a smaller 2px lift so charts stay readable. */
+  chart?: boolean
 }
 
 /**
- * Restrained glass surface with a hairline border.
+ * Premium light card surface — white fill, hairline border, soft warm shadow.
+ * `interactive` / `chart` opt into the shared reusable hover system.
  */
-export function Panel({ className, interactive = false, children, ...props }: PanelProps) {
+export function Panel({ className, interactive = false, chart = false, children, ...props }: PanelProps) {
   return (
     <div
       className={cn(
-        'glass rounded-2xl',
-        interactive &&
-          'transition-colors duration-300 hover:border-white/15 hover:bg-white/[0.045]',
+        'glass rounded-card',
+        interactive && 'interactive-card group',
+        chart && 'interactive-chart',
         className,
       )}
       {...props}

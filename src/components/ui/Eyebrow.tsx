@@ -12,7 +12,7 @@ interface EyebrowProps {
 export function Eyebrow({ children, className }: EyebrowProps) {
   return (
     <span className={cn('eyebrow', className)}>
-      <span className="h-1 w-1 rounded-full bg-neon-cyan shadow-glow" aria-hidden />
+      <span className="h-1 w-1 rounded-full bg-teal" aria-hidden />
       {children}
     </span>
   )

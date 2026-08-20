@@ -75,8 +75,8 @@ export interface NavLink {
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Product', href: '#product' },
-  { label: 'Pipeline', href: '#pipeline' },
-  { label: 'Preview', href: '#preview' },
+  { label: 'How it works', href: '#how' },
+  { label: 'Technology', href: '#technology' },
   { label: 'Privacy', href: '#privacy' },
 ]
 
